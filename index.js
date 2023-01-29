@@ -31,6 +31,25 @@ let persons = [
   app.get('/api/persons', (req, res) => {
     res.json(persons)
   })
+
+  app.get('/api/persons/:id', (request, response) => {
+    const id = Number(request.params.id)
+    const person = persons.find(person => person.id === id)
+    if (!person) {
+      response.status(404).end()
+    } else {
+      response.json(person)
+    }
+  })
+
+  app.delete('/api/persons/:id', (request, response) => {
+    console.log(persons)
+    console.log("---------")
+    const id = Number(request.params.id)
+    persons = persons.filter(person => person.id !== id)
+  console.log(persons)
+    response.status(204).end()
+  })
   
   const PORT = 3001
   app.listen(PORT, () => {
