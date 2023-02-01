@@ -37,8 +37,10 @@ let persons = [
     }
 ]
 
-  app.get('/info', (req, res) => { //not database yet
-    res.send(`<div>Phonebook has info for ${persons.length} people</div><div>${new Date()}</div>`)
+  app.get('/info', (req, res) => {
+    Person.find({}).then(personsdb => {
+      res.send(`<div>Phonebook has info for ${personsdb.length} people</div><div>${new Date()}</div>`)
+    })
   })
 
   
@@ -48,44 +50,32 @@ let persons = [
     })
   })
 
-  app.get('/api/persons/:id', (request, response) => { //not database yet
-    const id = Number(request.params.id)
-    const person = persons.find(person => person.id === id)
-    if (!person) {
-      response.status(404).end()
-    } else {
+  app.get('/api/persons/:id', (request, response) => { 
+    Person.findById(request.params.id).then(person => {
       response.json(person)
-    }
+    })
   })
 
-  app.delete('/api/persons/:id', (request, response) => { //not database yet
+  app.delete('/api/persons/:id', (request, response) => { //not in database yet
     const id = Number(request.params.id)
     persons = persons.filter(person => person.id !== id)
     response.status(204).end()
   })
 
-  const generateId = () => {
-    const maxId = Math.floor(Math.random() * 5000)
-    return maxId + 1
-  }
-
-  app.post('/api/persons', (request, response) => { //not database yet
-    const person = request.body
-    person.id = generateId()
-    if (!person.name || !person.number) {
-      return response.status(400).json({ 
-        error: 'content missing' 
-      })
-    }
-    const existing_person = persons.find(p => p.name === person.name)
-    if (existing_person) {
-      return response.status(400).json({ 
-        error: 'name must be unique' 
-      })
+  app.post('/api/persons', (request, response) => { //doesn't take existing names into account yet
+    const body = request.body
+    if (!body.name || !body.number) {
+      return response.status(400).json({ error: 'content missing' })
     }
 
-    persons = persons.concat(person)
-    response.json(person)
+    const person = new Person({
+      name: body.name,
+      number: body.number
+    })
+
+    person.save().then(savedPerson => {
+      response.json(savedPerson)
+    })
   })
 
 
