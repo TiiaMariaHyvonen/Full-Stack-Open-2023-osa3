@@ -1,6 +1,10 @@
+require('dotenv').config()
 const express = require('express')
 var morgan = require('morgan')
 const cors = require('cors')
+const mongoose = require('mongoose')
+const Person = require('./models/person')
+
 
 const app = express()
 
@@ -33,16 +37,18 @@ let persons = [
     }
 ]
 
-  app.get('/info', (req, res) => {
+  app.get('/info', (req, res) => { //not database yet
     res.send(`<div>Phonebook has info for ${persons.length} people</div><div>${new Date()}</div>`)
   })
 
   
   app.get('/api/persons', (req, res) => {
-    res.json(persons)
+    Person.find({}).then(personsdb => {
+      res.json(personsdb)
+    })
   })
 
-  app.get('/api/persons/:id', (request, response) => {
+  app.get('/api/persons/:id', (request, response) => { //not database yet
     const id = Number(request.params.id)
     const person = persons.find(person => person.id === id)
     if (!person) {
@@ -52,7 +58,7 @@ let persons = [
     }
   })
 
-  app.delete('/api/persons/:id', (request, response) => {
+  app.delete('/api/persons/:id', (request, response) => { //not database yet
     const id = Number(request.params.id)
     persons = persons.filter(person => person.id !== id)
     response.status(204).end()
@@ -63,7 +69,7 @@ let persons = [
     return maxId + 1
   }
 
-  app.post('/api/persons', (request, response) => {
+  app.post('/api/persons', (request, response) => { //not database yet
     const person = request.body
     person.id = generateId()
     if (!person.name || !person.number) {
@@ -84,7 +90,7 @@ let persons = [
 
 
 
-  const PORT = process.env.PORT || 3001
+  const PORT = process.env.PORT
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
   })
