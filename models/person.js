@@ -25,7 +25,12 @@ mongoose.connect(url)
       minlength: 8,
       validate: {
         validator: function(p) {
-          return p[2] === '-' || p[3] === '-';
+          const nums = ['0','1','2','3','4','5','6','7','8','9']
+          const p1 = Array.from([...p])
+          const p2 = Array.from([...p])
+          const i2 = String(p1.splice(2,1))
+          const i3 = String(p2.splice(3,1))
+          return ((String(i2) === '-' && p1.every(c => (nums.includes(c)))) || (String(i3) === '-' && p2.every(c => (nums.includes(c)))))
         },
         message: "Phone number in wrong format. The format should be xx-xxxxx... or xxx-xxxx..."
       },
