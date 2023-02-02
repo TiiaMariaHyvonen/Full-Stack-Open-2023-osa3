@@ -22,6 +22,13 @@ mongoose.connect(url)
     },
     number: {
       type: String,
+      minlength: 8,
+      validate: {
+        validator: function(p) {
+          return p[2] === '-' || p[3] === '-';
+        },
+        message: "Phone number in wrong format. The format should be xx-xxxxx... or xxx-xxxx..."
+      },
       required: true
     }
   })
